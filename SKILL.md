@@ -74,12 +74,17 @@ python3 <skill_dir>/scripts/html_to_svg.py <input.html> <output.svg>
 
 ### 4. 写入飞书画板
 
-按 `references/whiteboard-guide.md` 的完整流程操作：
+**主方案（一步到位）：** 创建文档时直接嵌入 SVG 画板。
 
-1. `lark-cli docs +create` 创建飞书文档
-2. `lark-cli docs +update` 插入空白画板
-3. `lark-cli whiteboard +query` 获取画板 token
-4. `lark-cli whiteboard +update` 写入 SVG
+```bash
+lark-cli docs +create --title "<图表标题>" \
+  --content '<whiteboard type="svg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">...</svg></whiteboard>' \
+  --as user
+```
+
+> SVG 内容需要先从第 3 步生成的 `.svg` 文件中读取，整体嵌入 `<whiteboard type="svg">` 标签。
+
+**备选方案：** 如果 `lark-cli docs +create` 不支持直接嵌入 SVG 画板，回退到 `references/whiteboard-guide.md` 中的传统 4 步流程。
 
 **写入前自检清单（避免遗漏）：**
 - [ ] 原图每个节点都有对应 `<rect>` 或对应元素
