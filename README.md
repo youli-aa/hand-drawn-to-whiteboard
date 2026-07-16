@@ -1,45 +1,54 @@
-# 手绘转飞书画板
+# hand-drawn-to-whiteboard
 
-将手绘结构图/脑图照片 → 识别 → 专业结构图 → 飞书云画板（手机端可编辑）。
+> 将手绘结构图/脑图照片，自动识别后生成专业结构图，并写入飞书云文档画板（双击可编辑）。
 
-## ⚠️ 依赖
+## 适用场景
 
-**使用本技能前，必须先安装以下技能：**
+- 开会时白板拍照 → 一键转成可编辑画板
+- 纸笔画的流程图 / 架构图 / 思维导图 → 飞书画板
+- 团队分享时直接给链接，手机也能看也能改
 
-| 依赖技能 | 用途 | 安装方式 |
-|---------|------|---------|
-| `diagram-maker` | 生成专业结构图 HTML | 在 Aily 技能市场中搜索安装 |
+## 5 步流程
 
-> 如果 diagram-maker 未安装，技能会回退到手动构造 SVG，但效果不如 diagram-maker 生成的图专业。
+| 步骤 | 做什么 | 用到 |
+|------|--------|------|
+| 1. 读图 | 识别节点、连线、箭头方向、分组、文字 | 视觉模型 |
+| 2. 生成 HTML | 出专业结构图（语义色、连线、字体） | [diagram-maker](https://github.com/youli-aa/diagram-maker) |
+| 3. HTML→SVG | 解析 CSS class、`var()` 变量、`viewBox`，转纯 SVG | `scripts/html_to_svg.py` |
+| 4. 写画板 | `docs +create` 一步嵌入 `<whiteboard type="svg">` | lark-cli |
+| 5. 交付 | 只返回飞书文档链接 | — |
 
 ## 触发方式
 
-发送手绘图片 + 类似「帮我生成结构图」「转成画板」「做成脑图」等表述即可。
+发一张手绘图片 + 类似下面的任一句话：
 
-## 流程
+- "帮我生成结构图"
+- "转成画板"
+- "做成脑图"
+- "放到画板里"
+- "把这个图转成可以编辑的"
 
-1. 读取手绘图片，识别实体、箭头、分组、文字
-2. 调用 diagram-maker 生成专业结构图 HTML
-3. HTML → SVG（飞书画板兼容格式）
-4. 写入飞书云画板
-5. 返回画板链接（手机端双击可编辑）
+## 依赖
+
+- **diagram-maker** skill（生成结构图 HTML/SVG）
+- **lark-cli**（飞书文档 + 画板写入）
 
 ## 文件结构
 
 ```
-SKILL.md              — 主流程
-references/
-  whiteboard-guide.md — 飞书画板操作参考
-scripts/
-  html_to_svg.py      — HTML → SVG 转换脚本
+hand-drawn-to-whiteboard/
+├── SKILL.md                          # 主入口
+├── references/whiteboard-guide.md    # 画板写入详细参考
+└── scripts/html_to_svg.py            # HTML→SVG 转换（含 CSS class 解析）
 ```
 
-## 依赖
+## 已知能力
 
-- diagram-maker 技能（Aily 技能市场安装）
-- 飞书 CLI（l-cli）
-- 飞书云画板权限
+- 解析 `<style>` 里的 CSS class 规则
+- 解析元素属性里的 `var(--xxx)` 变量
+- 修正 bs4 转小写导致的 `viewBox` 问题
+- 一步嵌入飞书画板（不再需要 create→update→query→update 四步）
 
-## 作者
+## License
 
-尤可 × 肖瑶
+MIT
